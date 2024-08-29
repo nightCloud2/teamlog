@@ -1,0 +1,1 @@
+alter table img add tb_name varchar(50) not null;

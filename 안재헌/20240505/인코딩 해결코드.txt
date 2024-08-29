@@ -1,0 +1,109 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>자주묻는질문</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px;
+            margin-bottom: 2px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        .faq-prefix {
+            color: green;   /* 초록색으로 설정 */
+            font-weight: bold; /* 글씨를 굵게 */
+            margin-right: 10px; /* 오른쪽 여백 추가 */
+        }
+        .title {
+            display: flex; /* Flexbox를 사용하여 내용을 한 줄에 나열 */
+            align-items: center; /* 세로 중앙 정렬 */
+        }
+        .category-button {
+            background-color: #4CAF50; /* 버튼 배경색 */
+            border: none; /* 테두리 없앰 */
+            color: white; /* 글자색 */
+            padding: 10px 20px; /* 패딩 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+            text-decoration: none; /* 밑줄 없앰 */
+            display: inline-block; /* 인라인 블록으로 표시 */
+            font-size: 16px; /* 글자 크기 */
+            margin: 4px 2px; /* 마진 */
+            cursor: pointer; /* 커서 포인터 */
+            border-radius: 10px; /* 모서리 둥글게 */
+        }
+        .category-container {
+            margin-bottom: 20px; /* 카테고리와 테이블 사이 여백 */
+        }
+    </style>
+
+    <script>
+
+        $(document).ready(function() {
+            $(".category-button").click(function() {
+                var queId = $(this).attr("value");
+                $.ajax({
+                    url: "/faq/major",
+                    type: "GET",
+                    data: {queId: queId},
+                    dataType: "json",
+                    success: function(data) {
+                        if (Array.isArray(data)) {
+                            var tbody = document.getElementById('faq-table-body');
+                            tbody.innerHTML = ''; // Clear existing rows
+                            data.forEach(faq => {
+                                var tr = document.createElement('tr');
+                                var td = document.createElement('td');
+                                td.className = 'title';
+                                var span = document.createElement('span');
+                                span.className = 'faq-prefix';
+                                span.textContent = 'Q';
+                                td.appendChild(span);
+                                td.append(document.createTextNode(faq.title));
+                                tr.appendChild(td);
+                                tbody.appendChild(tr);
+                            });
+                        } else {
+                            console.error('Received data is not an array:', data);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error occurred:", xhr.responseText, xhr.status, xhr.statusText, error);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+<div class="category-container">
+    <button class="category-button" value="6">전체</button>
+    <button class="category-button" value="1">거래문의</button>
+    <button class="category-button" value="2">이용/운영정책 문의</button>
+    <button class="category-button" value="3">신고접수</button>
+    <button class="category-button" value="4">회원계정/이용문의</button>
+    <button class="category-button" value="5">기타</button>
+</div>
+
+<table>
+    <thead>
+    <tr><th>제목</th></tr>
+    </thead>
+    <tbody id="faq-table-body">
+    <!-- AJAX로 동적으로 삽입 -->
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css" integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <style>
+        .post-slider{
+        border:1px solid red;
+        }
+        .post-slider .post-wrapper{
+        width:84%;
+        height:350px;
+        margin:0px auto;
+        border:1px dashed red;
+        }
+        .post-slider .post-wrapper .post{
+        width:300px;
+        height:350px;
+        display:inline-block;
+        background:gray;
+        }
+
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        li{
+            list-style: none;
+            display: inline-block;
+        }
+
+        a{
+            text-decoration: none;
+            font-size: 14px;
+            color: #212121;
+        }
+
+        #line{
+            width: 100%;
+            border-top: 1px solid #eee;
+        }
+
+        #header{
+            width: 1000px;
+            height: 100px;
+            /* border: 1px solid red; */
+            margin: 0 auto;
+            position: relative;
+        }
+
+        #header div{
+            display: inline-block;
+        }
+
+        #header #Logo{
+            position: relative;
+            width: 200px;
+            height: 100%;
+        }
+
+        #header #Logo img{
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(0, -50%);
+            width: 200px;
+        }
+
+        #header #searchbar{
+            margin : 0 20px;
+            width: 500px;
+            height: 100%;
+            position: relative;
+        }
+
+        #header #searchbar #search{
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(0, -50%);
+            width: 500px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: #f7f7f7;
+            border: none;
+            padding: 0 40px;
+            background-image: url("searchicon.png");
+            background-size: 14px;
+            background-repeat: no-repeat;
+            background-position: 2%;
+            box-sizing: border-box;
+        }
+
+        #header #searchbar #search::placeholder{
+            color: #a3a3a3;
+        }
+
+        #header #searchbar #search:focus{
+            outline: none;
+        }
+
+        #header #myarea{
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        #header #myarea a{
+            position: relative;
+            padding-left: 30px;
+            display: inline-block;
+            height: 100%;
+        }
+
+        #header #myarea #myiconlist li{
+            margin-left: 5px;
+        }
+
+        .fa-icon{
+            padding-right: 5px;
+            font-size: 24px;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        #navlist{
+            width: 1000px;
+            height: 50px;
+            margin: 0 auto;
+            margin-bottom: 20px;
+        }
+
+        #navlist #nav-sellcd{
+            margin-right: 10px;
+        }
+
+        #navlist #nav-sellcd a{
+            display: inline-block;
+            background-color: #232323;
+            border-radius: 5px;
+            color: #fff;
+            width: 120px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+        }
+
+        #navlist .fa-sellcd{
+            padding-right: 5px;
+            color: #fff;
+        }
+
+        #navlist .nav-li{
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div id="Logo">
+            <a href="#"><img src="logo.png" alt="logo"></a>
+        </div>
+        <div id="searchbar">
+            <input type="text" id="search" class="search_area" placeholder="어떤 상품을 찾으시나요?" autocomplete="off">
+        </div>
+        <div id="myarea">
+            <ul id="myiconlist">
+                <li id="chat"><a href="#" id="a_chat"><i class="fa-regular fa-comment-dots fa-icon"></i>채팅하기</a></li>
+                <li id="sell"><a href="#" id="a_sell"><i class="fa-solid fa-basket-shopping fa-icon"></i>판매하기</a></li>
+                <li id="mypage"><a href="#" id="a_mypage"><i class="fa-regular fa-user fa-icon"></i>마이</a></li>
+            </ul>
+        </div>
+    </header>
+    <nav id="nav">
+        <ul id="navlist">
+            <li id="nav-sellcd"><a href="#"><i class="fa-solid fa-bars fa-sellcd"></i>상품 카테고리</a></li>
+            <li id="nav-commu" class="nav-li "><a href="#">커뮤니티</a></li>
+            <li id="nav-event" class="nav-li "><a href="#">이벤트</a></li>
+            <li id="nav-report" class="nav-li "><a href="#">문의하기</a></li>
+        </ul>
+    </nav>
+    <div id="line"></div>
+    <div class="post-slider">
+        <h1 class="sider-title">Treding Posts</h1>
+        <div class="post-wrapper">
+          <div class="post">1</div>
+          <div class="post">2</div>
+          <div class="post">3</div>
+          <div class="post">4</div>
+          <div class="post">5</div>
+          <div class="post">6</div>
+          <div class="post">7</div>
+          <div class="post">8</div>
+          <div class="post">9</div>
+          <div class="post">10</div>
+          <div class="post">11</div>
+          <div class="post">12</div>
+          <div class="post">13</div>
+          <div class="post">14</div>
+          <div class="post">15</div>
+        </div>
+    </div>
+<script>
+    $("#search").on("keyup", function(){
+        let ser_leng = $("#search").val().length;
+        if(ser_leng > 0){
+            $("#search").add()
+        }
+    })
+
+    $(".post-wrapper").slick({
+        dots: true,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        slidesToScroll: 4,
+        arrows : true,         // 옆으로 이동하는 화살표 표시 여부
+        responsive: [
+            {
+            breakpoint: 1024,
+            settings: {
+                slidesToShow: 3,
+                slidesToScroll: 3,
+                infinite: true,
+                dots: true
+            }
+            },
+            {
+            breakpoint: 600,
+            settings: {
+                slidesToShow: 2,
+                slidesToScroll: 2
+            }
+            },
+            {
+            breakpoint: 480,
+            settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1
+            }
+            }
+            // You can unslick at a given breakpoint now by adding:
+            // settings: "unslick"
+            // instead of a settings object
+        ]
+    });
+</script>
+</body>
+</html>

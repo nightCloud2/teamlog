@@ -1,0 +1,121 @@
+// 판매/나눔 페이지 접속하는 경우
+1. Controller
+2. Service
+
+
+
+// 글쓰기(버튼 누르는 경우)
+1. Controller
+	1.1. Session ID 값을 가지고 온다
+	1.2. Session ID 값이 없으면 login 화면으로 보낸다.
+	1.3. Session ID 값이 존재하면 글쓰기 페이지로 이동
+
+
+
+// 글쓰기(글을 작성하는 경우)
+1. Controller
+	1.1. Session ID 값을 가지고 온다
+	1.2. Img 처리 진행
+	1.3. ObjectMapper를 이용하여 JSON형태를 SaleDto 객체로 변환
+		1.3.1. SaleDto의 setter를 이용하여 gno, full_file_rt 값을 저장
+		1.3.2. map에 다시 "sale"값 저장 -> 중복이니까 덮어씌워질 것
+	1.4. ObjectMapper를 이용하여 JSON형태를 TagDto 객체로 변환
+		1.4.1. '#' 기호를 제거하여 태그 내용만 추출
+		1.4.2. 태그값들을 List에 담음
+		1.4.3. map에 다시 "tag"값 저장 -> 중복이니까 덮어씌워질 것
+	1.4. map에 Session ID값을 담고, Service 단으로 전달한다.
+2. Service - Transaction
+	2.1. 넘겨받은 map을 객체에 맞는 Dao에 데이터를 담음
+	2.2. insert를 수행한다.
+		2.2.1. saleDao
+			- 필수값이 들어왔는지 확인한다. -> view 단에서 진행
+			- 필수값이 들어온 경우 insert 진행
+			- 필수값이 들어오지 않은 경우 
+		2.2.2. tagDao
+			2.2.2.3. for 문
+					2.2.2.3.1. for문을 통해서 tagDao setter로 contents값을 넣어줌
+					
+					★★★ tag테이블 contents Unique키로 변경해서 중복값 들어가지 않도록 해야됨 ★★★
+
+					2.2.2.3.2. tagDao에 해당하는 contents값이 존재하는지 확인
+						- 값이 존재하는 경우
+							- tagDao의 no값 반환
+						- 값이 존재하지 않는 경우
+							- tagDao의 insert문 수행   
+				2.2.2.3. SaleTagDao
+					- SaleDto의 no를 getter를 이용해서 가져오고, SaleTagDao에 setter를 이용해서 sale_no 저장
+					- TagDto의 no를 getter를 이용해서 가져오고, SaleTagDao에 setter를 이용해서 tag_no 저장
+					- SaleTagDao의 insert문 수행
+		2.2.4. saleHistoryDao
+			- SaleDao 정보를 그대로 saleHistoryDao에 insert문으로 담기
+	2.3. 위의 과정 중 실패하는 부분이 생기면 Controller로 error 넘기기
+
+// 수정하기(수정하기 버튼을 누르는 경우) - session id와 글작성자가 일치하는 경우
+1. Controller
+	1.1. 해당하는 판매글의 번호를 받아와서 값을 Service로 전달
+2. Service
+	2.1. SaleDao의 select문을 사용하여 해당하는 번호의 내용을 전부 가져옴
+	2.2. SaleDao의 값을 그대로 model에 담음 model.addAttribute("Sale", saleDto);
+	2.3. SaleWrite 페이지를 보여줌 -> 이거 타고오면 등록하기 버튼이 수정하기 버튼으로 보여야 됨
+
+
+
+// 수정하기(수정 후 등록하기 버튼 누르는 경우)
+1. Controller
+	1.1. 글쓰기와 동일하게 진행
+2. Service
+	2.1. 글쓰기와 동일하게 진행
+		2.2.1. saleDao
+			- saleDao의 update문 수행
+		2.2.2. tagDao
+			2.2.2.3. for 문
+					- for문을 통해서 tagDao setter로 contents값을 넣어줌
+					- tagDao의 insert문 수행
+				2.2.2.3. SaleTagDao
+					- SaleDto의 no를 getter를 이용해서 가져오고, SaleTagDao에 setter를 이용해서 sale_no 저장
+					- TagDto의 no를 getter를 이용해서 가져오고, SaleTagDao에 setter를 이용해서 tag_no 저장
+					- SaleTagDao의 insert문 수행
+		2.2.4. saleHistoryDao
+			- SaleDao 정보를 그대로 saleHistoryDao에 insert문으로 담기
+
+
+
+// 삭제하기(글을 삭제하는 경우) - session id와 글작성자가 일치하는 경우
+1. Controller
+	1.1. SaleDto의 no 값을 Service로 넘김
+2. Service
+	2.1. SaleDao
+		2.1.1. SalDto의 값의 ur_state를 'N'으로 변경
+		2.1.2. SaleDao의 update문 수행
+	2.2. SaleHistoryDao
+		2.2.1. SaleDao 정보를 그대로 saleHistoryDao에 insert문으로 담기
+
+
+
+// 끌어올리기(글을 끌어올리는 경우) - session id와 글작성자가 일치하는 경우
+1. Controller
+	1.1. SaleDto의 no 값을 Service로 넘김
+2. Service
+	2.1.. HoistingDao
+		2.1.1. SaleDto의 값을 HoistingDto에 setter로 담음
+			- sal_no, addr_cd, addr_name, seller_id, sal_i_cd
+		2.1.2. HoistingDao의 insert문 수행
+
+
+
+// 가격제시, 나눔신청 - 신청자인 경우
+1. Controller
+2. Service
+
+
+
+// 가격제시, 나눔신청 - 판매자인 경우
+1. Controller
+2. Service
+
+
+// SaleDto Insert문 변경한걸로 적용해서 다시 진행하기
+- 진정훈에게 AddrCd관련 mapper, dto, dao 받음
+- 이걸로 적용해서 일단 session에 적용되었다고 가정하고 작업하기
+
+

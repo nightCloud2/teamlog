@@ -1,0 +1,219 @@
+create table sale
+(
+    no               bigint auto_increment
+        primary key,
+    addr_cd          varchar(8)                            not null,
+    addr_name        varchar(100)                          not null comment '판매자가 판매하는 지역의 행정구역명',
+    seller_id        varchar(25)                           not null,
+    seller_nick      varchar(20)                           not null,
+    sal_i_cd         varchar(9)                            not null comment '판매 카테고리',
+    sal_name         varchar(20)                           not null comment '판매 카테고리명',
+    group_no         int                                   null,
+    img_full_rt      text                                  null,
+    pro_s_cd         varchar(10) default 'S'               null comment 'S:새상품/A:사용감없음/B:사용감적음/C:사용감많음/D:고장파손',
+    tx_s_cd          varchar(10) default 'S'               null comment 'Transaction method',
+    trade_s_cd_1     varchar(10) default 'F'               null comment 'O:온라인/F:직거래/D:택배거래',
+    trade_s_cd_2     varchar(10)                           null comment 'O:온라인/F:직거래/D:택배거래',
+    sal_s_cd         varchar(10) default 'S'               null comment 'S:판매중/R:예약중/C:거래완료',
+    title            varchar(100)                          not null,
+    contents         text                                  not null,
+    price            int         default 0                 null,
+    bid_cd           varchar(10)                           not null,
+    pickup_addr_cd   varchar(8)                            null,
+    pickup_addr_name varchar(100)                          null,
+    detail_addr      text                                  null comment '거래 진행할 상세 장소를 기재',
+    brand            varchar(20) default ''                null,
+    reg_price        int                                   null,
+    buyer_id         varchar(25)                           null,
+    buyer_nick       varchar(20)                           null,
+    like_cnt         int         default 0                 null comment '사람들이 좋아요 누른 숫자',
+    view_cnt         int         default 0                 null,
+    r_date           timestamp   default CURRENT_TIMESTAMP null comment '판매글 등록일',
+    m_date           timestamp   default CURRENT_TIMESTAMP null comment '판매글 수정일',
+    hoist_cnt        int         default 0                 null comment '작성자가 글을 끌어올린 횟 수',
+    h_date           timestamp                             null comment '판매글 끌어올리기일',
+    bid_cnt          int         default 0                 null,
+    ur_state         char        default 'Y'               null comment 'Y: 사용/N: 삭제',
+    ad_state         char        default 'N'               null comment 'Y: 게시글 유지/N: 게시글 삭제',
+    first_date       timestamp                             null,
+    first_id         varchar(10)                           null,
+    last_date        timestamp                             null,
+    last_id          varchar(10)                           null,
+    constraint FK_addr_cd_TO_sale_2
+        foreign key (seller_id) references user (id),
+    constraint FK_administrative_TO_sale_1
+        foreign key (addr_cd) references administrative (addr_cd),
+    constraint FK_sale_category_TO_sale_1
+        foreign key (sal_i_cd) references sale_category (sal_cd)
+);
+
+create index sale_addr_cd_sn_index
+    on sale (addr_cd asc, no desc);
+
+create table tag
+(
+    no         bigint auto_increment
+        primary key,
+    contents   varchar(25)      null,
+    state      char default 'Y' null,
+    first_date timestamp        null,
+    first_id   varchar(10)      null,
+    last_date  timestamp        null,
+    last_id    varchar(10)      null
+);
+
+create table sale_tag
+(
+    sal_no     bigint      not null,
+    tag_no     bigint      not null,
+    first_date timestamp   null,
+    first_id   varchar(10) null,
+    last_date  timestamp   null,
+    last_id    varchar(10) null,
+    primary key (sal_no, tag_no),
+    constraint FK_sale_TO_sale_tag_1
+        foreign key (sal_no) references sale (no),
+    constraint FK_tag_TO_sal_tag_1
+        foreign key (tag_no) references tag (no)
+);
+
+create index FK_tag_TO_sale_tag_1
+    on sale_tag (tag_no);
+
+create table sale_history
+(
+    no               bigint auto_increment,
+    sal_no           bigint       not null,
+    addr_cd          varchar(8)   not null comment 'AUTOx',
+    addr_name        varchar(100) not null,
+    seller_id        varchar(25)  not null,
+    seller_nick      varchar(20)  not null,
+    sal_i_cd         varchar(9)   not null,
+    sal_name         varchar(20)  not null,
+    group_no         int          not null,
+    img_full_rt      text         not null,
+    title            varchar(100) not null,
+    contents         text         not null,
+    pro_s_cd         varchar(10)  null comment '제품상태코드',
+    tx_s_cd          varchar(10)  not null comment '거래방식 코드',
+    trade_s_cd_1     varchar(10)  not null,
+    trade_s_cd_2     varchar(10)  null,
+    sal_s_cd         varchar(10)  not null comment '판매상태 코드',
+    biding           char         null,
+    price            int          not null,
+    pickup_addr_cd   varchar(8)   null,
+    pickup_addr_name varchar(100) null,
+    detail_addr      text         null,
+    buy_id           varchar(25)  null,
+    buy_nick         varchar(25)  null,
+    r_date           timestamp    not null,
+    m_date           timestamp    not null,
+    ur_state         char         not null,
+    ad_state         char         not null,
+    first_date       timestamp    null,
+    first_id         varchar(10)  null,
+    last_date        timestamp    null,
+    last_id          varchar(10)  null,
+    primary key (no, sal_no),
+    constraint FK_sale_TO_sale_history_2
+        foreign key (sal_no) references sale (no),
+    constraint sale_history_sale_addr_cd_fk
+        foreign key (addr_cd) references sale (addr_cd)
+);
+
+create index addr
+    on sale_history (addr_cd, sal_no, no);
+
+create table biding
+(
+    no          bigint auto_increment,
+    sal_no      bigint                              not null,
+    addr_cd     varchar(8)                          not null,
+    addr_name   varchar(100)                        not null,
+    bid_cd      varchar(10)                         not null,
+    buyer_id    varchar(25)                         not null,
+    price       int                                 null,
+    reason      text                                null,
+    bid_state   char      default 'Y'               null,
+    bid_date    timestamp default CURRENT_TIMESTAMP null comment '제시/신청한 일자',
+    grant_state char      default 'N'               null comment 'Y: 승인/N: 미승인',
+    grant_date  timestamp                           null comment '제시/신청을 승인한 일자',
+    first_date  timestamp                           null,
+    first_id    varchar(10)                         null,
+    last_date   timestamp                           null,
+    last_id     varchar(10)                         null,
+    primary key (no, sal_no),
+    constraint FK_sale_TO_biding_1
+        foreign key (addr_cd) references sale (addr_cd),
+    constraint FK_sale_TO_biding_2
+        foreign key (sal_no) references sale (no),
+    constraint FK_user_TO_biding_1
+        foreign key (buyer_id) references user (id)
+);
+
+create index biding_addr_cd_sal_no_sn_index
+    on biding (addr_cd, sal_no, no);
+
+
+create table hoisting
+(
+    no         bigint auto_increment,
+    sal_no     bigint      not null,
+    addr_cd    varchar(8)  not null,
+    addr_name  varchar(20) not null,
+    seller_id  varchar(25) not null,
+    sal_i_cd   varchar(25) not null,
+    h_date     timestamp   not null,
+    first_date timestamp   null,
+    first_id   varchar(10) null,
+    last_date  timestamp   null,
+    last_id    varchar(10) null,
+    primary key (no, sal_no),
+    constraint FK_sale_TO_hoisting_1
+        foreign key (addr_cd) references sale (addr_cd),
+    constraint FK_sale_TO_hoisting_2
+        foreign key (sal_no) references sale (no)
+);
+
+create index hoisting_addr_cd_sal_no_sn_index
+    on hoisting (addr_cd, sal_no, no);
+
+
+
+
+CREATE TABLE `community_board` (
+  `no` bigint NOT NULL AUTO_INCREMENT,
+  `ur_id` varchar(25) NOT NULL,
+  `addr_cd` varchar(8) NOT NULL,
+  `addr_no` bigint NOT NULL,
+  `commu_cd` varchar(10) NOT NULL,
+  `commu_name` varchar(100) DEFAULT NULL,
+  `addr_name` varchar(100) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `contents` text NOT NULL,
+  `nick` varchar(20) NOT NULL,
+  `img_full_rt` text,
+  `group_no` int DEFAULT NULL,
+  `r_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `m_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `like_cnt` int DEFAULT '0',
+  `view_cnt` int DEFAULT '0',
+  `ur_state` char(1) DEFAULT 'y',
+  `comment_count` int DEFAULT '0',
+  `ad_state` char(1) DEFAULT 'n',
+  `first_date` timestamp NULL DEFAULT NULL,
+  `first_id` varchar(10) DEFAULT NULL,
+  `last_date` timestamp NULL DEFAULT NULL,
+  `last_id` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`no`),
+  KEY `post_ibfk_1` (`ur_id`),
+  KEY `post_ibfk_2` (`addr_cd`),
+  KEY `post_ibfk_3` (`addr_no`),
+  KEY `commu_cd` (`commu_cd`),
+  KEY `community_board_groupno_fk` (`group_no`),
+  CONSTRAINT `community_board_groupno_fk` FOREIGN KEY (`group_no`) REFERENCES `img_group` (`group_no`),
+  CONSTRAINT `community_board_ibfk_1` FOREIGN KEY (`ur_id`) REFERENCES `addr_cd` (`ur_id`),
+  CONSTRAINT `community_board_ibfk_2` FOREIGN KEY (`addr_cd`) REFERENCES `addr_cd` (`addr_cd`),
+  CONSTRAINT `community_board_ibfk_3` FOREIGN KEY (`addr_no`) REFERENCES `addr_cd` (`no`),
+  CONSTRAINT `community_board_ibfk_4` FOREIGN KEY (`commu_cd`) REFERENCES `commu` (`commu_cd`)
+) ENGINE=InnoDB AUTO_INCREMENT=457 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

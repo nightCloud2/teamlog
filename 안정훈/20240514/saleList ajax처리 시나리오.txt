@@ -1,0 +1,17 @@
+1. 판매/나눔 페이지를 클릭한다.
+
+2. /sale/list로 들어간다.
+	2.1. /login/saleList.jsp를 호출한다.
+		- 주소(addr_cd), 카테고리(saleCategory1)는 값을 미리 담아서 넘겨준다.
+	2.2. 페이지 이동
+
+3. /sale/saleList
+	3.1. window.ready() 내부에서 List를 불러오는 ajax를 호출한다.
+		- 선택한 addr_cd, 카테고리 saleCategory1 값을 넘겨준다.
+		- "/searchAddrCd?page=" + page + "&pageSize=" + pageSize +"&addr_cd=" + addr_cd + "&tx_s_cd=" + tx_s_cd
+
+4. /searchAddrCd
+	4.1. default 파라미터로 page, pageSize를 지정해둔다.
+	4.1. 해당하는 addr_cd와, sal_s_cd가 일치하는 List를 불러온다.
+	4.2. 4.1.에 해당하는 list의 개수를 구한다(TotalSize). -> pageHandler를 구하기 위함
+	4.3. 글 목록과 페이지핸들러를 map에 담아서 반환한다.

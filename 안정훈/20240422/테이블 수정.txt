@@ -1,0 +1,22 @@
+sale에서
+- tag 컬럼 삭제
+- biding 컬럼명 bid_cd로 변경
+
+sale_history에서
+- addr_name을 varchar(20)로 수정
+- addr_nm 삭제
+- tag 컬럼 삭제
+- trade_s_cd_2를 null로 변경
+- buy_id를 null로 변경
+- buy_nick을 null로 변경
+
+user_info1
+- user_info1에서 user_info로 테이블명 수정
+
+addr_cd
+- 사용상태 default값 빠짐
+
+biding_history
+- grand_state 컬럼명을 grant_state로 변경
+- price를 null로 변경
+- grant_date를 null로 변경

@@ -1,0 +1,118 @@
+<script>
+    $(document).ready(function() {
+        // queId == 6 이면 전체 목록, 1~5이면 각각의 카테고리로 이동한다.
+        function categoryFaq(queId) {
+            $.ajax({
+                url: "/faq/major",
+                type: "GET",
+                data: { queId: queId },
+                dataType: "json",
+                success: function(data) {
+                    var tbody = $("#faq-table-body"); // FAQ 목록을 표시할 테이블
+                    // 기존에 표시된 내용을 비운다
+                    tbody.empty();
+                    data.forEach(function(faq) {
+                        // 새 tr 생성 후 td생성하고 title클래스 추가한다.
+                        var tr = $("<tr></tr>");
+                        var td = $("<td></td>").addClass('title');
+                        var span = $("<span></span>").addClass('faq-prefix').text('Q');
+                        td.append(span);
+                        td.append(document.createTextNode(faq.title));
+                        tr.append(td);
+                        tbody.append(tr);
+
+                        // 내용을 위한 숨겨진 행 추가
+                        var contentTr = $("<tr style='display:none;'></tr>").addClass("content-row");
+                        var contentTd = $("<td></td>").attr("colspan", "1").addClass("content");
+                        contentTr.append(contentTd);
+                        tbody.append(contentTr);
+                        tr.data('no', faq.no); // 행에 FAQ의 고유 번호 저장한다.
+                    });
+                },
+                error: function(error) { // 요청이 실패했을 때 실행할 함수
+                    console.error("Error", error);
+                }
+            });
+        }
+
+        // 카테고리 버튼을 클릭하면 이벤트 처리한다.
+        $(".category-button").click(function() {
+            var queId = $(this).val(); // 클릭된 버튼의 value 속성(카테고리 ID) 읽기
+            categoryFaq(queId); // 해당 카테고리 ID로 FAQ 데이터 요청
+        });
+
+        // 제목 클릭 시 이벤트 처리
+        $(document).on('click', '.title', function() {
+            var tr = $(this).closest('tr'); // 클릭된 제목이 속한 행 선택
+            var contentTr = tr.next(".content-row"); // 해당 제목의 내용이 담긴 행 선택
+            var no = tr.data('no'); // 행에 저장된 FAQ 번호 가져오기
+
+            if (!contentTr.is(':visible')) { // 내용 행이 현재 숨겨져 있으면
+                $(".content-row").hide(); // 모든 내용 행을 숨김
+                if (contentTr.find('.content').html().trim() === "") { // 내용이 아직 로드되지 않았으면
+                    // 서버에서 내용 가져오기
+                    $.ajax({
+                        url: '/getContents',
+                        method: 'GET',
+                        data: { no: no },
+                        success: function(content) {
+                            contentTr.find('.content').html(content); // 내용 행에 데이터 삽입
+                            contentTr.show(); // 내용 행 표시
+                        },
+                        error: function(xhr) {
+                            console.error("Error fetching content:", xhr.responseText);
+                        }
+                    });
+                } else {
+                    contentTr.show(); // 이미 로드된 내용이 있으면 그냥 표시
+                }
+            } else {
+                contentTr.hide(); // 내용 행이 이미 보이는 상태면 숨김
+            }
+        });
+
+        // 검색 버튼 클릭 시 이벤트 처리한다.
+        $("#searchButton").click(function() {
+            // 입력에서 검색어 읽기는다.
+            var keyword = $("#searchInput").val().trim();
+            if (keyword) { // 검색어가 비어있지 않으면
+                $.ajax({
+                    url: '/search',
+                    type: 'GET',
+                    data: { keyword: keyword },
+                    dataType: 'json',
+                    success: function(data) {
+                        var tbody = $("#faq-table-body");
+                        tbody.empty(); // 기존 목록 제거
+                        if (data.length === 0) { // 검색 결과가 없으면
+                            tbody.append('<tr><td colspan="1">해당 검색어가 없습니다.</td></tr>');
+                        } else { // 검색 결과가 있으면
+                            data.forEach(function(faq) {
+                                var tr = $("<tr></tr>");
+                                var td = $("<td></td>").addClass('title');
+                                var span = $("<span></span>").addClass('faq-prefix').text('Q');
+                                td.append(span);
+                                td.append(document.createTextNode(faq.title));
+                                tr.append(td);
+                                tbody.append(tr);
+
+                                // 내용을 위한 숨겨진 행 추가
+                                var contentTr = $("<tr style='display:none;'></tr>").addClass("content-row");
+                                var contentTd = $("<td></td>").attr("colspan", "1").addClass("content");
+                                contentTr.append(contentTd);
+                                tbody.append(contentTr);
+                                tr.data('no', faq.no);
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("검색 Error:", xhr.responseText);
+                    }
+                });
+            }
+        });
+
+        // 초기 페이지 로드 시 전체 FAQ 목록 로드
+        categoryFaq(6);
+    });
+</script>

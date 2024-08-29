@@ -1,0 +1,78 @@
+- biding_history 테이블
+
+테이블 삭제 : drop table biding_history;
+
+- hoisting_hoistory 테이블
+
+테이블명 변경 : rename table hoisting_history to hoisting;
+컬럼명 변경 :
+alter table hoisting
+    change sal_id_cd sal_i_cd varchar(25) not null;
+
+- biding 테이블
+
+컬럼 삭제 :
+alter table biding
+    drop column bid_cnt;
+
+- sale 테이블
+컬럼 추가
+alter table sale
+    add img_full_rt text null after sal_name;
+
+alter table sale_history
+    add img_full_rt text null after sale_i_cd;
+
+alter table sale
+    add group_no int null;
+
+alter table sale
+    modify group_no int null after sal_name;
+
+
+
+- tag관련 테이블
+
+alter table sale_tag
+    drop foreign key FK_sale_TO_community_tag_1;
+
+alter table community_tag
+    drop foreign key FK_tag_TO_community_tag_1;
+
+
+alter table sale_tag
+    add constraint FK_sale_TO_sale_tag_1
+        foreign key (sal_no) references sale (no);
+
+alter table sale_tag
+    add constraint FK_tag_TO_sal_tag_1
+        foreign key (tag_no) references tag (no);
+
+alter table community_tag
+    add constraint FK_tag_TO_community_tag_1
+        foreign key (tag_no) references tag (no);
+
+alter table tag
+    modify no bigint auto_increment;
+
+alter table tag
+    auto_increment = 1;
+
+-- 1. 외래 키 제약 조건 제거
+alter table sale_tag drop foreign key FK_sale_TO_sale_tag_1;
+alter table sale_tag drop foreign key FK_tag_TO_sal_tag_1;
+
+-- 2. PRIMARY 키 제거
+alter table sale_tag drop primary key;
+
+-- 3. 기존 PRIMARY 키에 맞는 새로운 PRIMARY 키 추가
+alter table sale_tag add primary key (sal_no, tag_no);
+
+-- 4. 외래 키 제약 조건 다시 추가
+alter table sale_tag add constraint FK_sale_TO_sale_tag_1 foreign key (sal_no) references sale (no);
+alter table sale_tag add constraint FK_tag_TO_sal_tag_1 foreign key (tag_no) references tag (no);
+
+
+
+
+
